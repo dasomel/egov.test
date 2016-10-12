@@ -1,0 +1,46 @@
+* MyBatis sqlmap 자동 재로딩 설정
+
+1. 개요
+mybatis + Spring 개발시 쿼리 매핑 파일이 변경되면 웹애플리케이션 서버를 재기동해야 적용
+이러한 불편을 없애기 위해 매핑 파일 변경을 실시간으로 감시,적용하는 모듈을 제공
+기존에 ibatis의 소스를 mybatis에 맞도록 커스터마이징
+
+2. 제약사항
+감시 대상 파일들은 스타트업 당시에 결정된다. 그러므로 추가된 파일들에 대해서는 감지가 되지 않고, 삭제된 파일들에 대해서는 경고 메시지가 나온다.
+예를 들어, sqlMapperConfig에 sqlMap 파일이 추가되거나 하면 해당 맵이 적용되기는 하지만, 실시간 변경 감지 대상으로 추가되지는 않는다.
+
+3. 요구사항
+JDK 1.5 이상, Spring, mybatis, spring-mybatis 라이브러리가 설치되어 있는 환경
+
+4. 적용순서
+
+4.1 아래  파일 복사
+src\main\java\mybatis\RefreshableSqlSessionFactoryBean.java
+
+4.2 src\main\resources\egovframework\spring\context-mapper.xml 파일 수정
+Spring의 applicationContext 설정파일 중 sqlSession를 얻기 위한 SqlSessionFactoryBean빈을 신규클래스로 교체
+
+================================================================
+<bean id="sqlSession" class="mybatis.RefreshableSqlSessionFactoryBean">
+  <property name="dataSource" ref="dataSource" />
+  <property name="configLocation“
+            value="classpath:/egovframework/sqlmap/example/sql-mapper-config.xml" />
+  <property name="mapperLocations"
+            value="classpath:/egovframework/sqlmap/example/mappers/*.xml" />
+  <property name="checkInterval" value="1000" />
+  <!-- 변경 감지 시간 간격 (1000분의 1초 단위)를 지정한다. -->
+</bean>
+================================================================
+
+4.3 src\main\java\egovframework\example\sample\service\impl\EgovSampleServiceImpl.java 파일 수정
+기존 설정인 ibatis에 대해서 주석처리하고 mybatis를 주석해제
+
+	// TODO ibatis 사용
+	//@Resource(name = "sampleDAO")
+	//private SampleDAO sampleDAO;
+	// TODO mybatis 사용
+	  @Resource(name="sampleMapper")
+	  private SampleMapper sampleDAO;
+
+5. Tomcat 기동 후 아래 파일 수정하여 재기동없이 적용되는지 테스트
+src\main\resources\egovframework\sqlmap\example\mappers\EgovSample_Sample_SQL.xml

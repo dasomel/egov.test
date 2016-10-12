@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.0.xsd">
+
+	<!-- SqlSession setup for MyBatis Database Layer -->
+	<!--  변경전
+	<bean id="sqlSession" class="org.mybatis.spring.SqlSessionFactoryBean">
+		<property name="dataSource" ref="dataSource" />
+		<property name="configLocation" value="classpath:/egovframework/sqlmap/example/sql-mapper-config.xml" />
+		<property name="mapperLocations" value="classpath:/egovframework/sqlmap/example/mappers/*.xml" />
+	</bean>
+	 -->
+
+	<!-- SqlSession setup for MyBatis Database Layer -->
+
+	<!-- 변경후 : XXX MyBatis sqlmap 자동 재로딩 설정
+        1. sqlSession 를 변경하여 파일변경시 다시 xml 로딩하도록 한다.
+        2. mappingLocations 을 사용하여 패턴을 주어 여러 파일을 한번에 지정 가능하다
+        3. checkInterval : 1000/1 초에 한번식 파일변경 체크를 함
+	-->
+	<bean id="sqlSession" class="mybatis.RefreshableSqlSessionFactoryBean">
+		<property name="dataSource" ref="dataSource" />
+		<property name="configLocation" value="classpath:/egovframework/sqlmap/example/sql-mapper-config.xml" />
+		<property name="mapperLocations" value="classpath:/egovframework/sqlmap/example/mappers/EgovSample_Sample_SQL.xml" />
+		<property name="checkInterval" value="1000" />
+    </bean>
+
+	<!-- MapperConfigurer setup for MyBatis Database Layer with @Mapper("deptMapper") in DeptMapper Interface -->
+ 	<bean class="egovframework.rte.psl.dataaccess.mapper.MapperConfigurer">
+		<property name="basePackage" value="egovframework.example.sample.service.impl" />
+	</bean>
+
+</beans>
