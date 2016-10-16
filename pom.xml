@@ -16,23 +16,13 @@
 
 	<repositories>
 		<repository>
-			<id>mvn2</id>
-			<url>http://repo1.maven.org/maven2/</url>
+			<id>nexus</id>
+			<url>http://127.0.0.1:8002/nexus/content/groups/public/</url>
 			<releases>
 				<enabled>true</enabled>
 			</releases>
 			<snapshots>
 				<enabled>true</enabled>
-			</snapshots>
-		</repository>
-		<repository>
-			<id>egovframe</id>
-			<url>http://www.egovframe.go.kr/maven/</url>
-			<releases>
-				<enabled>true</enabled>
-			</releases>
-			<snapshots>
-				<enabled>false</enabled>
 			</snapshots>
 		</repository>
 	</repositories>
